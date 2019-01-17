@@ -7,6 +7,7 @@ import service.IOService;
 
 import java.util.LinkedHashMap;
 import java.util.Map;
+import java.util.Scanner;
 
 public class VendingMachine {
     private Map<Product, Integer> productStock;
@@ -54,7 +55,49 @@ public class VendingMachine {
     }
 
     public void run() {
-
+        System.out.println("Produse");
         service.displayProductMenu(productStock);
+        service.displayMessage("Selectati un produs: ");
+        int option = service.readInput();
+        boolean validOption = false;
+        Product chosenProduct = null;
+        while (!validOption) {
+            for (Product p : productStock.keySet()) {
+                if (p.getCode() == option) {
+                    validOption = true;
+                    chosenProduct = p;
+                    break;
+                }
+            }
+            if (!validOption) {
+                service.displayMessage("Cod incorect. Incercati din nou: ");
+                option = service.readInput();
+            }
+        }
+        System.out.println();
+
+        System.out.println("Bani");
+        service.displayCoinMenu(coinStock);
+        int sum = 0;
+        while (sum < chosenProduct.getPrice()) {
+            service.displayMessage("Introduceti suma: ");
+            option = service.readInput();
+            validOption = false;
+            Coin chosenCoin = null;
+            while (!validOption) {
+                for (Coin c : coinStock.keySet()) {
+                    if (c.getCode() == option) {
+                        validOption = true;
+                        chosenCoin = c;
+                    }
+                }
+                if (!validOption) {
+                    service.displayMessage("Cod incorect. Incercati din nou: ");
+                    option = service.readInput();
+                }
+            }
+            sum += chosenCoin.getValue();
+        }
+        System.out.println();
     }
 }
