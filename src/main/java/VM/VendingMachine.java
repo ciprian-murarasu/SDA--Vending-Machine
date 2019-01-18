@@ -4,10 +4,7 @@ import model.Coin;
 import model.CurrencyType;
 import model.Product;
 import service.IOService;
-
-import java.util.LinkedHashMap;
 import java.util.Map;
-import java.util.Scanner;
 
 public class VendingMachine {
     private Map<Product, Integer> productStock;
@@ -55,40 +52,27 @@ public class VendingMachine {
     }
 
     public void run() {
-        System.out.println("Produse");
-        service.displayProductMenu(productStock);
-        service.displayMessage("Selectati un produs: ");
-        int option = service.readInput();
-        boolean validOption = false;
-        Product chosenProduct = null;
-        while (!validOption) {
-            for (Product p : productStock.keySet()) {
-                if (p.getCode() == option) {
-                    validOption = true;
-                    chosenProduct = p;
-                    break;
-                }
-            }
-            if (!validOption) {
-                service.displayMessage("Cod incorect. Incercati din nou: ");
-                option = service.readInput();
+        boolean isVMEmpty = false;
+        for (Product p : productStock.keySet()) {
+            if (productStock.get(p) > 0) {
+                isVMEmpty = true;
+                break;
             }
         }
-        System.out.println();
-
-        System.out.println("Bani");
-        service.displayCoinMenu(coinStock);
-        int sum = 0;
-        while (sum < chosenProduct.getPrice()) {
-            service.displayMessage("Introduceti suma: ");
-            option = service.readInput();
-            validOption = false;
-            Coin chosenCoin = null;
+        if (!isVMEmpty) {
+            System.out.println("Aparatul este gol!");
+        } else {
+            service.displayProductMenu(productStock);
+            service.displayMessage("Selectati un produs: ");
+            int option = service.readInput();
+            boolean validOption = false;
+            Product chosenProduct = null;
             while (!validOption) {
-                for (Coin c : coinStock.keySet()) {
-                    if (c.getCode() == option) {
+                for (Product p : productStock.keySet()) {
+                    if (p.getCode() == option && productStock.get(p) > 0) {
                         validOption = true;
-                        chosenCoin = c;
+                        chosenProduct = p;
+                        break;
                     }
                 }
                 if (!validOption) {
@@ -96,8 +80,30 @@ public class VendingMachine {
                     option = service.readInput();
                 }
             }
-            sum += chosenCoin.getValue();
+            System.out.println();
+
+            service.displayCoinMenu(coinStock);
+            int sum = 0;
+            while (sum < chosenProduct.getPrice()) {
+                service.displayMessage("Introduceti suma: ");
+                option = service.readInput();
+                validOption = false;
+                Coin chosenCoin = null;
+                while (!validOption) {
+                    for (Coin c : coinStock.keySet()) {
+                        if (c.getCode() == option && coinStock.get(c) > 0) {
+                            validOption = true;
+                            chosenCoin = c;
+                        }
+                    }
+                    if (!validOption) {
+                        service.displayMessage("Cod incorect. Incercati din nou: ");
+                        option = service.readInput();
+                    }
+                }
+                sum += chosenCoin.getValue();
+            }
+            System.out.println();
         }
-        System.out.println();
     }
 }
