@@ -4,6 +4,7 @@ import model.Coin;
 import model.CurrencyType;
 import model.Product;
 import service.IOService;
+
 import java.util.Map;
 
 public class VendingMachine {
@@ -52,14 +53,14 @@ public class VendingMachine {
     }
 
     public void run() {
-        boolean isVMEmpty = false;
+        boolean isVMEmpty = true;
         for (Product p : productStock.keySet()) {
             if (productStock.get(p) > 0) {
-                isVMEmpty = true;
+                isVMEmpty = false;
                 break;
             }
         }
-        if (!isVMEmpty) {
+        if (isVMEmpty) {
             System.out.println("Aparatul este gol!");
         } else {
             service.displayProductMenu(productStock);
@@ -85,7 +86,7 @@ public class VendingMachine {
             service.displayCoinMenu(coinStock);
             int sum = 0;
             while (sum < chosenProduct.getPrice()) {
-                service.displayMessage("Introduceti suma: ");
+                service.displayMessage("Credit: " + sum + ". Introduceti suma: ");
                 option = service.readInput();
                 validOption = false;
                 Coin chosenCoin = null;
@@ -102,8 +103,23 @@ public class VendingMachine {
                     }
                 }
                 sum += chosenCoin.getValue();
+                coinStock.replace(chosenCoin, coinStock.get(chosenCoin) + 1);
             }
             System.out.println();
+            productStock.replace(chosenProduct, productStock.get(chosenProduct) - 1);
+            service.displayProductMenu(productStock);
+
+            int rest = sum - chosenProduct.getPrice();
+            while (rest > 0) {
+                Coin maxCoin = new Coin(0, 0);
+                for (Coin c : coinStock.keySet()) {
+                    if (coinStock.get(c) > 0 && rest >= c.getValue() && c.getValue() > maxCoin.getValue())
+                        maxCoin = c;
+                }
+                rest -= maxCoin.getValue();
+                coinStock.replace(maxCoin, coinStock.get(maxCoin) - 1);
+            }
+            service.displayCoinMenu(coinStock);
         }
     }
 }
