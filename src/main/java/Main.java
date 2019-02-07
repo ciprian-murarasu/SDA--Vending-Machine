@@ -20,7 +20,7 @@ public class Main {
 
         coinStock.put(new Coin(201, 10), 20);
         coinStock.put(new Coin(202, 5), 25);
-        coinStock.put(new Coin(203, 1), 50);
+        coinStock.put(new Coin(203, 1), 0);
         coinStock.put(new Coin(204, 2), 0);
 
         VendingMachine vm = new VendingMachine(productStock, coinStock, new IOService(), CurrencyType.RON);
